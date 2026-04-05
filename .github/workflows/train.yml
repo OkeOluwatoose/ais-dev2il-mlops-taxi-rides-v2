@@ -31,7 +31,7 @@ jobs:
         run: uv sync
 
       - name: Pull data with DVC
-        run: dvc pull
+        run: uv run dvc pull
 
       - name: Train model (${{ matrix.model_type }})
         run: uv run outlier_detector_training.py ${{ matrix.model_type }}
