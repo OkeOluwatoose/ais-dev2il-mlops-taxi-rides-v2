@@ -1,5 +1,6 @@
 [core]
     autostage = true
-    remote = local_folder
-['remote "local_folder"']
-    url = /Users/peter.rietzler/Documents/private/dev2il/ais-dev2il/dvc-storage
+    remote = dagshub
+['remote "dagshub"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/peter.rietzler.privat/ais-dev2il-mlops-taxi-rides-v2.s3
