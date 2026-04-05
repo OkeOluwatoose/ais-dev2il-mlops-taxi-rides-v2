@@ -27,3 +27,6 @@ dist/
 build/
 *.egg-info/
 
+models
+mlflow.db
+mlruns

@@ -5,7 +5,9 @@ requires-python = ">=3.13.0"
 dependencies = [
     "pandas==2.2.3",
     "pyarrow==19.0.1",
-    "fastparquet==2024.11.0"
+    "fastparquet==2024.11.0",
+    "scikit-learn>=1.8.0",
+    "mlflow>=3.10.1",
 ]
 
 [dependency-groups]

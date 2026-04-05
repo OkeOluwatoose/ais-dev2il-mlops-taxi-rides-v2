@@ -43,3 +43,9 @@ set remote to local file system
 uvx dvc remote add -d local_folder /Users/peter.rietzler/Documents/private/dev2il/ais-dev2il/dvc-storage
 
  uvx dvc push
+
+
+export MLFLOW_TRACKING_URI=https://dagshub.com/peter.rietzler.privat/ais-dev2il-mlops-taxi-rides-v2.mlflow
+export MLFLOW_TRACKING_USERNAME=peter.rietzler.privat
+export MLFLOW_TRACKING_PASSWORD=
+uv run outlier_detector_training.py random_forest
