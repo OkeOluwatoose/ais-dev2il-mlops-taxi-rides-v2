@@ -1,0 +1,5 @@
+[core]
+    autostage = true
+    remote = local_folder
+['remote "local_folder"']
+    url = /Users/peter.rietzler/Documents/private/dev2il/ais-dev2il/dvc-storage
