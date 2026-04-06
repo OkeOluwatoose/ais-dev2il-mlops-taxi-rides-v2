@@ -30,3 +30,4 @@ build/
 models
 mlflow.db
 mlruns
+/outlier_detection_model.pkl

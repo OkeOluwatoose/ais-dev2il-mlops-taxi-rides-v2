@@ -50,6 +50,7 @@ export MLFLOW_TRACKING_USERNAME=peter.rietzler.privat
 export MLFLOW_TRACKING_PASSWORD=
 uv run outlier_detector_training.py random_forest
 
+uv run fastapi dev api.py
 
 # Workflow
 
