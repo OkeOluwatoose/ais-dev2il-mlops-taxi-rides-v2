@@ -18,6 +18,16 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+REQUIRED_ENV_VARS = ["MLFLOW_TRACKING_URI", "MLFLOW_TRACKING_USERNAME", "MLFLOW_TRACKING_PASSWORD"]
+
+
+def check_env_vars() -> None:
+  missing = [var for var in REQUIRED_ENV_VARS if not os.environ.get(var)]
+  if missing:
+    logger.error(f"Missing required environment variables: {', '.join(missing)}")
+    sys.exit(1)
+
+
 def train_model(model_type: str):
   data_file = "data/taxi-rides-training-data.parquet"
   logger.info(f"Processing taxi ride data from: {data_file}")
@@ -28,11 +38,6 @@ def train_model(model_type: str):
   valid_model_types = ['random_forest', 'random_forest_v2', 'logistic_regression']
   if model_type not in valid_model_types:
     raise ValueError(f"Unknown model_type '{model_type}'. Valid options: {', '.join(valid_model_types)}")
-
-  # You need to set these environment variables in order to track you experiments at dagshub
-  # export MLFLOW_TRACKING_URI=https://dagshub.com/peter.rietzler.privat/ais-dev2il-mlops-taxi-rides-v2.mlflow
-  # export MLFLOW_TRACKING_USERNAME=dagshub username
-  # export MLFLOW_TRACKING_PASSWORD=dagshub access token
 
   mlflow.set_experiment(model_type)
   # Turn on auto logging. See https://mlflow.org/docs/latest/ml/tracking/autolog
@@ -174,6 +179,7 @@ def detect_outliers(taxi_rides_data: pd.DataFrame, model) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+  check_env_vars()
   model_type = sys.argv[1]  # random_forest, random_forest_v2, logistic_regression
   train_model(model_type)
 
