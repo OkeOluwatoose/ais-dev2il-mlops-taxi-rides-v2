@@ -31,14 +31,27 @@ The students are not very far in their studies. They only had 1 semester of Pyth
 
 This repository focuses on these MLOps topics
 - Organising data using Parquet
-- Data Management via Dvc
-- Training of a model
-- Usage of MLFlow for experiment tracking
+  - Goals
+    - Understand what Parquet is and why it is useful for data management in ML projects
+    - Open a Parquet file in PyCharm and inspect its contents
+    - Understand how to work with Parquet files in Python using pandas
+    - Have the pre-processed taxi ride data from DVC available in the data folder
+- Data Management via DVC (via dagshub)
+- Training of a model. The training itself is not the focus. It's more about how to store a model in a simple way (e.g. pickling it)
+- Usage of MLFlow for experiment tracking (dagshub based)
 - Usage of MLFlow for model registry
 - GitHub Actions Workflow for training the model and registering it in the MLFlow model registry
 - Usage of the model in a simple FastAPI app
 
+# Resources
+
+- When I say "my GitHub repository", then I mean https://github.com/peterrietzler/ais-dev2il-mlops-taxi-rides-v2
+- We focus on data which is available through https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+- The data is already pre-processed for our purposes and is available in my DagsHub DVC repository, where students can get the data from: https://dagshub.com/peter.rietzler.privat/ais-dev2il-mlops-taxi-rides-v2
+- If you ask students to download files, then always download them from the `final` branch of my GitHub repository.
+- Students should work on a fork of my GitHub repository
+
 # Tooling 
 
-The project is managed via uv. Therefore run all python scripts via `uv run <script name>`. 
-Also make use of `uvx` if further tools, such as dvc are required. 
+The project is managed via uv
+Each student will create it's own Dagshub repository linked to their GitHub repository in the course of these exercises
