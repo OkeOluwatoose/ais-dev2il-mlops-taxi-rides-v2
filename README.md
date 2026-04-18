@@ -1036,3 +1036,151 @@ in the UI — no code change, no file update, no commit needed.
 💡 Notice the trade-off: with `.model-version`, every deployment decision was a Git commit — visible in history, reviewable in a pull request. 
 With aliases, that traceability moves out of Git and into MLflow. Promoting a new champion leaves no trace in your repository. Whether that's 
 acceptable depends on your team's process — but it's worth being aware of.
+---
+
+## 🤖 Exercise 6: The Training Pipeline
+
+In the previous exercises you trained the model by hand — running `combine_taxi_ride_data.py` and `outlier_detector_training.py` 
+locally on your machine. That works, but in Dev/MLOPs we aim for automation - right ? Let's see how we can automate the training
+using techniques that we already know and love.
+
+### Step 1: Create the workflow file
+
+Create the file `.github/workflows/train.yml`.
+
+### Step 2: Define the trigger
+
+We want the pipeline to run whenever code is pushed to `main`, and we also want to be able to trigger it manually.
+
+```yaml
+name: Train Models
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+```
+
+You've seen both of these before in the CI exercise - so no need to dig deep here.
+
+### Step 3: Train all three models in parallel
+
+Here's the interesting part. Instead of writing three separate jobs (one for `random_forest`, one for `random_forest_v2`, one for `logistic_regression`), 
+GitHub Actions lets you define **one job** and run it multiple times with different values — a **matrix strategy**.
+
+```yaml
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        model_type: [random_forest, random_forest_v2, logistic_regression]
+```
+
+Think of it like a loop: GitHub reads the list and spins up one job per value, all running in parallel. Inside the job you can 
+refer to the current value with `${{ matrix.model_type }}`.
+
+`fail-fast: false` means that if one model fails to train, the other two keep going. Without it, a single failure would cancel 
+all running jobs immediately.
+
+### Step 4: Configure credentials
+
+The training script needs to connect to MLflow on DagsHub. 
+We therefore have to set the three environment variables you've been exporting locally.
+
+Add them to the job:
+
+```yaml
+    env:
+      MLFLOW_TRACKING_URI: ${{ vars.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ vars.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+```
+
+Notice the difference between `vars.*` and `secrets.*`:
+- **`vars`** — plain text values, visible in the UI. Use for non-sensitive configuration like URLs and usernames.
+- **`secrets`** — encrypted, never shown in logs or the UI. Use for passwords and tokens.
+
+You need to add these to your repository settings. You already know how to do this from the CI exercise — go to **Settings → Secrets and variables → Actions**
+and configure everything you need.
+
+<details>
+<summary>🆘 Lost? Click here for step-by-step instructions</summary>
+
+1. Go to your repository on GitHub
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Under **Variables**, click **New repository variable** and add:
+   - `MLFLOW_TRACKING_URI` — e.g. `https://dagshub.com/<your-username>/<your-repo>.mlflow`
+   - `MLFLOW_TRACKING_USERNAME` — your DagsHub username
+4. Under **Secrets**, click **New repository secret** and add:
+   - `MLFLOW_TRACKING_PASSWORD` — your DagsHub access token (the same one you used for DVC)
+
+</details>
+
+### Step 5: Add the job steps
+
+Now add the steps that actually do the work:
+
+```yaml
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Pull data with DVC
+        run: |
+          uv run dvc remote modify --local origin access_key_id ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+          uv run dvc remote modify --local origin secret_access_key ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+          uv run dvc pull
+
+      - name: Train model (${{ matrix.model_type }})
+        run: uv run outlier_detector_training.py ${{ matrix.model_type }}
+```
+
+The DVC step injects your DagsHub token as the S3 credentials using `--local` (same as you did manually in Exercise 2 — 
+but here it reads from the secret instead of your terminal). 
+`${{ matrix.model_type }}` passes the current matrix value as the argument to the training script.
+
+### Step 6: Trigger the pipeline
+
+Commit and push your new workflow file.
+
+Watch three jobs spin up in parallel — one for each model type.  
+When they complete, check your DagsHub MLflow UI — you should see new runs logged for all three experiments.
+
+🎉 You just trained three models in parallel in the cloud.
+
+### 🚀 Level Up
+
+#### Challenge 1: Only Train When It Matters 🎯
+
+Right now the pipeline runs on every push to `main` — even if you only changed a comment in `README.md`. That wastes CI minutes and 
+clutters your MLflow with unnecessary runs.
+
+GitHub Actions supports **path filters**: the workflow only runs if at least one of the listed paths was changed in the push.
+
+Update the `push` trigger:
+
+```yaml
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/**"
+      - "uv.lock"
+      - "outlier_detector_training.py"
+  workflow_dispatch:
+```
+
+- `data/**` — any change to a DVC pointer file (new or updated data)
+- `uv.lock` — dependency changes that could affect training
+- `outlier_detector_training.py` — the training script itself changed
+
+Commit and push this change. Now try pushing a small README edit — the workflow should **not** trigger. Then push a change to `outlier_detector_training.py` — it should trigger.
+
+💡 `workflow_dispatch` always works regardless of path filters. So you can still trigger manually whenever you need to.
