@@ -2,7 +2,7 @@ name: Train Models
 
 on:
   push:
-    branches: [main]
+    branches: [main, final]
     paths:
       - "data/**"
       - "uv.lock"
