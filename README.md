@@ -218,7 +218,7 @@ This creates a `.dvc` folder (similar to `.git`). The `autostage` setting tells 
 ### Step 4: Configure the DVC remote
 
 Run these commands. Don't forget to replace the placeholders with your actual values using your username, repository name and the token
-that you copied above.  Alternatively you can go to your DagsHub repository **Remote** → **DVC** and copy the exact commands from there.
+that you copied above.
 
 ```bash
 uv run dvc remote add origin s3://dvc
@@ -313,7 +313,7 @@ uv run dvc pull
 
 #### Challenge 1: Gone but not Forgotten (Remote Edition)
 
-On your **pair's machine**, clone your GitHub fork, configure the DVC remote credentials and run:
+On your **pair's machine**, clone your GitHub fork, configure **your** DVC remote (see above) and run:
 
 ```bash
 uv run dvc pull
@@ -457,7 +457,7 @@ Run training again. Check the `models` folder — your `.pkl` file is there!
 
 ### Step 6: Save the evaluation metadata
 
-The model file tells you *what* was trained. The metadata tells you *how well* it performed.
+The model file contains *what* was trained. The metadata tells you *how well* it performed.
 Save it alongside the model so you always have both:
 
 ```python
@@ -518,13 +518,7 @@ print(predictions)
 
 #### Challenge 2: The Chef's Tasting Notes
 
-Regenerate the combined training data using **all days** (not just one):
-
-```bash
-uv run combine_taxi_ride_data.py
-```
-
-Then train all three model types:
+Train all three model types:
 
 ```bash
 uv run outlier_detector_training.py random_forest
@@ -534,8 +528,8 @@ uv run outlier_detector_training.py logistic_regression
 
 Open all three `.metadata.json` files side by side in PyCharm and compare them.
 
-- Which model has the best **recall** for the `True` class (catching real outliers)?
-- Which model has the best **precision** for the `True` class (not crying wolf)?
+- Which model has the best **recall** for the `True` class ?
+- Which model has the best **precision** for the `True` class ?
 - Which model would you choose for production, and why?
 
 
