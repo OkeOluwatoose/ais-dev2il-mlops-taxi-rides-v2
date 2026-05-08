@@ -158,6 +158,10 @@ At scale, this adds up fast.
 
 #### Challenge 3: No Code? No Problem!
 
+> ‼️ Data Wrangler is only available in PyCharm Pro. As we only have a 3 month Pro subscription, this 
+> one might already have been expired for you. In this case you can't do this level up in PyCharm. You however
+> can use the free [Visual Studio Code data wrangler extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.datawrangler)
+
 Explore the Parquet file without writing a single line of Python:
 
 1. In PyCharm's **Project** view, open `example-data/2025-01-01.taxi-rides.parquet`
