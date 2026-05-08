@@ -922,6 +922,7 @@ Here's the complete workflow you just ran through, end to end:
 Every step is reproducible: the data is versioned in DVC, the training run is logged in MLflow,
 the model version is pinned in Git, and the API always loads exactly the model you chose.
 
+![Workflow Summary](full_workflow.png)
 
 ### 🚀 Level Up
 
@@ -1212,7 +1213,7 @@ You can't just send your laptop. Docker is the answer. You already know how to b
 
 ### Block 1: The Dockerfile
 
-Create a file called `Dockerfile` in the root of your repository and paste in the following:
+Create a `Dockerfile` in the root of your repository and paste in the following:
 
 ```dockerfile
 ARG PYTHON_VERSION=3.13
