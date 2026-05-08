@@ -100,6 +100,10 @@ print(f'Parquet: {pq_time:.3f}s')
 🗣️ **Discuss with your pair:** You are building an ML pipeline that retrains a model every day.
 What problems would these differences cause over time?
 
+### PyCharm Troubleshooting
+
+In order to open Parquet files in PyCharm, install the "Parquet Loader" plugin. 
+
 ### 🚀 Level Up
 
 #### Challenge 1: Chuck Norris Never Needs `pd.to_datetime()`
